@@ -7,6 +7,8 @@ using namespace std;
 struct DatosOperacion
 {
     int opcion = 0;
+    int opcion_ope = 0;
+    vector<double> operandos;
 };
 
 // clase menu para mostrar menus
@@ -51,10 +53,10 @@ public:
         }
     }
 };
-;
 
 class ValidadorDecimal
 {
+public:
     static double leer_decimal()
     {
         double valor = 0;
@@ -69,37 +71,173 @@ class ValidadorDecimal
     }
 };
 
+class ValidadorOperandos
+{
+public:
+    static void leer_operandos(DatosOperacion &datos)
+    {
+        int cantidad;
+        cout << "Cuantos numeros quieres operar? ";
+        cantidad = ValidadorEntero::leer_entero();
+
+        datos.operandos.clear();
+        for (int i = 0; i < cantidad; i++)
+        {
+            cout << "Numero " << i + 1 << ": ";
+            datos.operandos.push_back(ValidadorDecimal::leer_decimal());
+        }
+    }
+};
+
+class Operacion
+{
+protected:
+    vector<double> operandos;
+    double resultado = 0;
+
+public:
+    Operacion(const DatosOperacion &datos)
+        : operandos(datos.operandos)
+    {
+    }
+
+    virtual double calcular() = 0;
+
+    double getResultado() const { return resultado; }
+    virtual ~Operacion() {}
+};
+class Suma : public Operacion
+{
+public:
+    Suma(const DatosOperacion &datos) : Operacion(datos) {}
+
+    double calcular() override
+    {
+        resultado = 0;
+        for (double n : operandos)
+            resultado += n;
+        return resultado;
+    }
+};
+class Resta : public Operacion
+{
+public:
+    Resta(const DatosOperacion &datos) : Operacion(datos) {}
+
+    double calcular() override
+    {
+        resultado = 0;
+        for (double n : operandos)
+            resultado -= n;
+        return resultado;
+    }
+};
+class Multiplicacion : public Operacion
+{
+public:
+    Multiplicacion(const DatosOperacion &datos) : Operacion(datos) {}
+
+    double calcular() override
+    {
+        resultado = 0;
+        for (double n : operandos)
+            resultado *= n;
+        return resultado;
+    }
+};
+class Division : public Operacion
+{
+public:
+    Division(const DatosOperacion &datos) : Operacion(datos) {}
+
+    double calcular() override
+    {
+        resultado = 0;
+        for (double n : operandos)
+            resultado += n;
+        return resultado;
+    }
+};
+
 class EjecucionMenu
 {
     Menu muestra;
+
 private:
     int opcion = 0;
-    //RegistroOperaciones registro;
-    //Historial           historial;
 
 public:
     EjecucionMenu(int o) : opcion(o) {}
     EjecucionMenu() : opcion(0) {}
 
-    int  getOpcion() const  { return opcion; }
-    void setOpcion(int o)   { opcion = o; }
+    int getOpcion() const { return opcion; }
+    void setOpcion(int o) { opcion = o; }
 
     bool ejecucion()
     {
-       DatosOperacion SeleccionOpc;
-       muestra.mostrar_menu();
-        SeleccionOpc.opcion = ValidadorEntero::leer_entero();
 
-        switch (SeleccionOpc.opcion)
+        DatosOperacion Seleccion_calc;
+        muestra.mostrar_menu();
+        Seleccion_calc.opcion = ValidadorEntero::leer_entero();
+
+        switch (Seleccion_calc.opcion)
         {
         case 1:
         {
-            //SelectorEjecucion selector(registro, historial);
-            //selector.ejecutar();
+            DatosOperacion seleccion_oper;
+
+            while (seleccion_oper.opcion != 5)
+            {
+                muestra.mostrar_menu_operaciones();
+
+                seleccion_oper.opcion = ValidadorEntero::leer_entero();
+
+                if (seleccion_oper.opcion >= 1 && seleccion_oper.opcion <= 4)
+                {
+                    ValidadorOperandos::leer_operandos(seleccion_oper);
+                }
+
+                switch (seleccion_oper.opcion)
+                {
+                case 1:
+                {
+                    Suma suma_res(seleccion_oper);
+                    cout << " Resultado: " << suma_res.calcular() << endl;
+                    break;
+                }
+                case 2:
+                {
+                    Resta resta_res(seleccion_oper);
+                    cout << " Resultado: " << resta_res.calcular() << endl;
+                    break;
+                }
+                case 3:
+                {
+                    Multiplicacion mult_res(seleccion_oper);
+                    cout << " Resultado: " << mult_res.calcular() << endl;
+                    break;
+                }
+                case 4:
+                {
+                    Division div_res(seleccion_oper);
+                    cout << " Resultado: " << div_res.calcular() << endl;
+                    break;
+                }
+                case 5:
+                {
+                    cout << ">> Volviendo al menu principal...\n";
+                    break;
+                }
+                default:
+                {
+                    cout << ">> Opcion no valida.\n";
+                    break;
+                }
+                }
+            }
             break;
         }
         case 2:
-            //Visualizador::mostrar_historial(historial);
             break;
 
         case 3:
@@ -111,7 +249,6 @@ public:
             return false;
 
         default:
-            //Visualizador::mostrar_error("Opcion no valida.");
             break;
         }
 
@@ -119,17 +256,11 @@ public:
     }
 };
 
-class Operacion
-{
-};
-
 int main()
 {
-    Menu menu;
     EjecucionMenu ejecucionMenu;
 
-    while (ejecucionMenu.ejecucion())  
+    while (ejecucionMenu.ejecucion())
     {
-        menu.mostrar_menu();
     }
 }
