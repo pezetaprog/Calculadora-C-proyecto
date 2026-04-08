@@ -1,6 +1,5 @@
 #include <iostream>
 #include <limits>
-#include <vector>
 using namespace std;
 
 // transporte de datos de nuestro programa
@@ -8,7 +7,7 @@ struct DatosOperacion
 {
     int opcion = 0;
     int opcion_ope = 0;
-    vector<double> operandos;
+    
 };
 
 // clase menu para mostrar menus
@@ -37,126 +36,26 @@ public:
     }
 };
 
-class ValidadorEntero
-{
-public:
-    static int leer_entero()
-    {
-        int valor = 0;
-        while (true)
-        {
-            if (cin >> valor)
-                return valor;
-            cout << "  [!] Entrada invalida. Ingresa un numero entero: ";
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        }
-    }
-};
 
-class ValidadorDecimal
-{
-public:
-    static double leer_decimal()
-    {
-        double valor = 0;
-        while (true)
-        {
-            if (cin >> valor)
-                return valor;
-            cout << "  [!] Entrada invalida. Ingresa un numero: ";
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        }
-    }
-};
-
-class ValidadorOperandos
-{
-public:
-    static void leer_operandos(DatosOperacion &datos)
-    {
-        int cantidad;
-        cout << "Cuantos numeros quieres operar? ";
-        cantidad = ValidadorEntero::leer_entero();
-
-        datos.operandos.clear();
-        for (int i = 0; i < cantidad; i++)
-        {
-            cout << "Numero " << i + 1 << ": ";
-            datos.operandos.push_back(ValidadorDecimal::leer_decimal());
-        }
-    }
-};
 
 class Operacion
 {
-protected:
-    vector<double> operandos;
-    double resultado = 0;
-
-public:
-    Operacion(const DatosOperacion &datos)
-        : operandos(datos.operandos)
-    {
-    }
-
-    virtual double calcular() = 0;
-
-    double getResultado() const { return resultado; }
-    virtual ~Operacion() {}
+int n;
 };
-class Suma : public Operacion
+class Resta 
+{
+
+   
+};
+class Multiplicacion 
+{
+
+    
+};
+class Division 
 {
 public:
-    Suma(const DatosOperacion &datos) : Operacion(datos) {}
-
-    double calcular() override
-    {
-        resultado = 0;
-        for (double n : operandos)
-            resultado += n;
-        return resultado;
-    }
-};
-class Resta : public Operacion
-{
-public:
-    Resta(const DatosOperacion &datos) : Operacion(datos) {}
-
-    double calcular() override
-    {
-        resultado = 0;
-        for (double n : operandos)
-            resultado -= n;
-        return resultado;
-    }
-};
-class Multiplicacion : public Operacion
-{
-public:
-    Multiplicacion(const DatosOperacion &datos) : Operacion(datos) {}
-
-    double calcular() override
-    {
-        resultado = 0;
-        for (double n : operandos)
-            resultado *= n;
-        return resultado;
-    }
-};
-class Division : public Operacion
-{
-public:
-    Division(const DatosOperacion &datos) : Operacion(datos) {}
-
-    double calcular() override
-    {
-        resultado = 0;
-        for (double n : operandos)
-            resultado += n;
-        return resultado;
-    }
+    
 };
 
 class EjecucionMenu
@@ -176,9 +75,9 @@ public:
     bool ejecucion()
     {
 
-        DatosOperacion Seleccion_calc;
+       
         muestra.mostrar_menu();
-        Seleccion_calc.opcion = ValidadorEntero::leer_entero();
+        
 
         switch (Seleccion_calc.opcion)
         {
