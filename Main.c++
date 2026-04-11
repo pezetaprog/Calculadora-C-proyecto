@@ -1,32 +1,79 @@
 #include <iostream>
-#include <limits>
+#include <stdlib.h>
 using namespace std;
 
-// transporte de datos de nuestro programa
-struct DatosOperacion
-{
-    int opcion = 0;
-    int opcion_ope = 0;
-    
+class GestorOperandos {
+private:
+    int cant;
+    int* operandos;
+
+public:
+    GestorOperandos() : cant(0), operandos(nullptr) {}
+
+    void setCantidad(int n) {
+        cant = n;
+        delete[] operandos;
+        operandos = new int[cant];
+    }
+
+    void setOperando(int indice, int valor) {
+        if (indice >= 0 && indice < cant)
+            operandos[indice] = valor;
+    }
+
+    int* getOperandos() const { return operandos; }
+    int getCantidad()   const { return cant; }
+
+    ~GestorOperandos() { delete[] operandos; }
 };
 
-// clase menu para mostrar menus
-class Menu
-{
+class LectorDatos {
 public:
-    void mostrar_menu() const // Le dice al compilador que esa variable no puede cambiar después de ser inicializada
-    {
-        cout << "\n===== Menu Calculadora =====\n";
+
+    int leerOpcionMenu() {
+        int opcion;
+        cin >> opcion;
+        return opcion;
+    }
+
+
+    int leerOpcionOperacion() {
+        int opcion;
+        cin >> opcion;
+        return opcion;
+    }
+
+    void leerOperandos(GestorOperandos& gestor) {
+        int n;
+        cout << "Cuantos numeros deseas operar: ";
+        cin >> n;
+        gestor.setCantidad(n);
+
+        for (int i = 0; i < n; i++) {
+            int valor;
+            cout << "Ingresa el numero [" << i + 1 << "]: ";
+            cin >> valor;
+            gestor.setOperando(i, valor);
+        }
+    }
+};
+
+class Menu{
+    public:
+   void mostrar(){
+     cout << "\n===== Menu Calculadora =====\n";
         cout << "1: Operaciones\n";
         cout << "2: Historial\n";
         cout << "3: Exportar resultados\n";
         cout << "4: Salir\n";
         cout << "Selecciona lo que deseas hacer: ";
-    }
+   }
+};
 
-    void mostrar_menu_operaciones() const
-    {
-        cout << "\n===== Menu Operaciones =====\n";
+class MenuOperaciones{
+public:
+    void mostrar(){
+     cout << "\n===== Menu Operaciones =====\n";
         cout << "1: Suma\n";
         cout << "2: Resta\n";
         cout << "3: Multiplicacion\n";
@@ -36,130 +83,122 @@ public:
     }
 };
 
-
-
-class Operacion
-{
-int n;
-};
-class Resta 
-{
-
-   
-};
-class Multiplicacion 
-{
-
-    
-};
-class Division 
-{
+class Operaciones {
 public:
-    
+    virtual double calcular(int* operandos, int cant) = 0;
+    virtual ~Operaciones() {}
 };
 
-class EjecucionMenu
-{
-    Menu muestra;
-
-private:
-    int opcion = 0;
-
+class Suma : public Operaciones {
 public:
-    EjecucionMenu(int o) : opcion(o) {}
-    EjecucionMenu() : opcion(0) {}
+    double calcular(int* operandos, int cant) override {
+        double resultado = 0;
+        for (int i = 0; i < cant; i++)
+            resultado += operandos[i];
+        return resultado;
+    }
+};
 
-    int getOpcion() const { return opcion; }
-    void setOpcion(int o) { opcion = o; }
+class Resta : public Operaciones {
+public:
+    double calcular(int* operandos, int cant) override {
+        if (cant == 0) return 0;
+        double resultado = operandos[0];
+        for (int i = 1; i < cant; i++)
+            resultado -= operandos[i];
+        return resultado;
+    }
+};
 
-    bool ejecucion()
-    {
+class Multiplicacion : public Operaciones {
+public:
+    double calcular(int* operandos, int cant) override {
+        if (cant == 0) return 0;
+        double resultado = 1;
+        for (int i = 0; i < cant; i++)
+            resultado *= operandos[i];
+        return resultado;
+    }
+};
 
-       
-        muestra.mostrar_menu();
-        
+class Division : public Operaciones {
+public:
+    double calcular(int* operandos, int cant) override {
+        if (cant == 0) return 0;
+        double resultado = operandos[0];
+        for (int i = 1; i < cant; i++) {
+            if (operandos[i] != 0)
+                resultado /= operandos[i];
+            else
+                cout << "Error: Division por cero en indice " << i << endl;
+        }
+        return resultado;
+    }
+};
 
-        switch (Seleccion_calc.opcion)
-        {
-        case 1:
-        {
-            DatosOperacion seleccion_oper;
+int main() {
+    // objetos
+    Menu menu;
+    MenuOperaciones menuOp;
+    LectorDatos lector;
+    GestorOperandos gestor;
 
-            while (seleccion_oper.opcion != 5)
-            {
-                muestra.mostrar_menu_operaciones();
+    // operaciones disponibles
+    Suma suma;
+    Resta resta;
+    Multiplicacion multi;
+    Division divi;
 
-                seleccion_oper.opcion = ValidadorEntero::leer_entero();
+    int opcion;
 
-                if (seleccion_oper.opcion >= 1 && seleccion_oper.opcion <= 4)
-                {
-                    ValidadorOperandos::leer_operandos(seleccion_oper);
+    do {
+        menu.mostrar();
+        opcion = lector.leerOpcionMenu();
+
+        switch (opcion) {
+
+            case 1: {
+                menuOp.mostrar();
+                int opOp = lector.leerOpcionOperacion();
+
+                lector.leerOperandos(gestor);
+
+                Operaciones* operacion = nullptr;
+
+                switch (opOp) {
+                    case 1: operacion = &suma;  break;
+                    case 2: operacion = &resta; break;
+                    case 3: operacion = &multi; break;
+                    case 4: operacion = &divi;  break;
                 }
 
-                switch (seleccion_oper.opcion)
-                {
-                case 1:
-                {
-                    Suma suma_res(seleccion_oper);
-                    cout << " Resultado: " << suma_res.calcular() << endl;
-                    break;
+                if (operacion != nullptr) {
+                    double resultado = operacion->calcular(
+                        gestor.getOperandos(),
+                        gestor.getCantidad()
+                    );
+                    cout << "Resultado: " << resultado << endl;
                 }
-                case 2:
-                {
-                    Resta resta_res(seleccion_oper);
-                    cout << " Resultado: " << resta_res.calcular() << endl;
-                    break;
-                }
-                case 3:
-                {
-                    Multiplicacion mult_res(seleccion_oper);
-                    cout << " Resultado: " << mult_res.calcular() << endl;
-                    break;
-                }
-                case 4:
-                {
-                    Division div_res(seleccion_oper);
-                    cout << " Resultado: " << div_res.calcular() << endl;
-                    break;
-                }
-                case 5:
-                {
-                    cout << ">> Volviendo al menu principal...\n";
-                    break;
-                }
-                default:
-                {
-                    cout << ">> Opcion no valida.\n";
-                    break;
-                }
-                }
+                break;
             }
-            break;
+
+            case 2:
+                cout << "Historial (pendiente)\n";
+                break;
+
+            case 3:
+                cout << "Exportar (pendiente)\n";
+                break;
+
+            case 4:
+                cout << "Saliendo...\n";
+                break;
+
+            default:
+                cout << "Opcion invalida\n";
         }
-        case 2:
-            break;
 
-        case 3:
-            cout << ">> Exportar resultados\n";
-            break;
+    } while (opcion != 4);
 
-        case 4:
-            cout << ">> Saliendo...\n";
-            return false;
-
-        default:
-            break;
-        }
-
-        return true;
-    }
-};
-
-int main()
-{
-    EjecucionMenu ejecucionMenu;
-
-    while (ejecucionMenu.ejecucion())
-    {
-    }
+    return 0;
 }
