@@ -2,7 +2,7 @@
 #include <cmath>
 using namespace std;
 
-// 1. PRIMERO la clase base/interfaz
+
 class Operaciones {
 public:
     virtual double calcular(int* operandos, int cant) = 0;
@@ -10,7 +10,7 @@ public:
     virtual ~Operaciones() {}
 };
 
-// 2. LUEGO las clases que heredan de ella
+
 class Suma : public Operaciones {
 public:
     string getNombre() override { return "Suma"; }
@@ -62,7 +62,7 @@ public:
     }
 };
 
-// 3. LUEGO GestorOperandos
+
 class GestorOperandos {
 private:
     int cant;
@@ -76,8 +76,8 @@ public:
         delete[] operandos;
         operandos = new int[cant];
     }
-
-    void setOperando(int indice, int valor) {
+                                            
+    void setOperando(int indice, int valor) { 
         if (indice >= 0 && indice < cant)
             operandos[indice] = valor;
     }
@@ -88,7 +88,7 @@ public:
     ~GestorOperandos() { delete[] operandos; }
 };
 
-// 4. LUEGO LectorDatos (usa GestorOperandos)
+
 class LectorDatos {
 public:
     int leerOpcionMenu() {
@@ -118,7 +118,7 @@ public:
     }
 };
 
-// 5. LUEGO Menu y MenuOperaciones (MenuOperaciones usa Operaciones)
+
 class Menu {
 public:
     void mostrar() {
@@ -133,7 +133,7 @@ public:
 
 class MenuOperaciones {
 public:
-    void mostrar(Operaciones** ops, int cantidad) {  // ✅ ahora Operaciones ya existe
+    void mostrar(Operaciones** ops, int cantidad) {  
         cout << "\n===== Menu Operaciones =====\n";
         for (int i = 0; i < cantidad; i++)
             cout << i + 1 << ": " << ops[i]->getNombre() << "\n";
@@ -141,7 +141,7 @@ public:
     }
 };
 
-// 6. LUEGO Calculadora (usa todo lo anterior)
+
 class Calculadora {
 private:
     Menu menu;
@@ -201,7 +201,7 @@ private:
     }
 };
 
-// 7. FINALMENTE main
+
 int main() {
     Suma suma;
     Resta resta;
@@ -209,7 +209,7 @@ int main() {
     Division divi;
 
     Operaciones* ops[] = { &suma, &resta, &multi, &divi };
-    int cantidad = 4;  // ✅ corregido de 5 a 4
+    int cantidad = 4; 
 
     Calculadora calc(ops, cantidad);
     calc.ejecutar();
